@@ -63,9 +63,9 @@ def main(file="",term=None):
             break
         print("UNSAT")
 
-        print(f"Ground Truth: {ground_truth}\n")
+        print(f"Ground Truth: {ground_truth}")
         if not verbose:
-            print(f"Solved in: {round(time.time()-start,3)*1000} ms")
+            print(f"Solved in: {round(time.time()-start,3)*1000} ms\n")
     if verbose:    
         solver.visualize_dag(G, find = True)
     return result 

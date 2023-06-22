@@ -59,9 +59,9 @@ def main(file="",term=None):
             else:
                 print("SAT")
         if not result: 
-            print("SAT")
+            print("Solver output: SAT")
             break
-        print("UNSAT")
+        print("Solver output: UNSAT")
 
         print(f"Ground Truth: {ground_truth}")
         if not verbose:

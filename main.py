@@ -2,6 +2,7 @@ import sys
 import formula_parser as gp
 import congruence_closure as cc
 import smt_parse as smtp
+import time 
 
 def main(file="",term=None):
     verbose = False
@@ -27,6 +28,7 @@ def main(file="",term=None):
     tokens, ground_truth, or_presence = smt_parser.parse(file) 
     #tokens.sort()
     for token in tokens:
+        start = time.time()
         token = token.strip()
         if or_presence:
             token = token[1:-1]
@@ -59,9 +61,11 @@ def main(file="",term=None):
         if not result: 
             print("SAT")
             break
-        print(f"UNSAT\n")
+        print("UNSAT")
+        if not verbose:
+            print(f"Solved in: {round(time.time()-start,3)*1000} ms")
 
-        print(f"Ground Truth: {ground_truth}\n\n")
+        print(f"Ground Truth: {ground_truth}\n")
     if verbose:    
         solver.visualize_dag(G, find = True)
     return result 

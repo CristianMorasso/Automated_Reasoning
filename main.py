@@ -6,7 +6,7 @@ import time
 
 def main(file="",term=None):
     verbose = False
-    # Checks
+    # Checks args
     if len(sys.argv)>1: file = sys.argv[1]
 
     if len(sys.argv)>2:
@@ -15,42 +15,41 @@ def main(file="",term=None):
     if file == "": 
         print("ERROR: no input file!")
         exit()
-    # #file = 'inputs\input_smt2\input.smt2'
-    # file = '.\inputs\input2.smt2'
 
-    # DECLARATIONS:
+    # declarations:
     solver = cc.CC_DAG()
     smt_parser = smtp.smt_parser()
     atom_parser = gp.parse_atoms(solver) 
 
-    # IMPLEMENTATION:
-    # Parsing the file
+    
+    # Parsing the file (split in tokens)
     tokens, ground_truth, or_presence = smt_parser.parse(file) 
-    #tokens.sort()
+    # running CC on all token till a SAT
     for token in tokens:
         start = time.time()
         token = token.strip()
         if or_presence:
             token = token[1:-1]
         equations,atoms = smt_parser.parse_and_clause(token) 
-        #print(equations)
-        # Drawing the graph in the CC_DAG object instance
+        # Parsing atoms to create the DAG
         atom_parser.parse(atoms) 
+        #Fix all CCPAR
         solver.add_fathers()  
         
-        G = solver.create_dag_to_visualize()
+        # use class NetworkX to draw the dag, only in verbose setup
         if verbose:
+            G = solver.create_dag_to_visualize()
             solver.visualize_dag(G)
-        status_before_process = solver.graph_to_string()
+            #saving status before the process to print it later
+            status_before_process = solver.graph_to_string()
         
         # Parsing the formulas and transforming them in tuples for the CC algorithm 
         solver.equalities, solver.inequalities = gp.parse_equations(equations,atom_parser.atom_dict) 
-        # Running Congruence Closure 
+        # Congruence Closure Step 
         result, ineq = solver.solve() 
         print((f"Formulas: {equations}"))
         if verbose:
-            #print((f"Problem: "))
-            #print((f"Formulas:\n{equations}"))
+            #some verbose prints
             print(f"Graph Nodes before the process:\nID\tAtom\tCCPAR\n{status_before_process}")
             print(f"Processed Graph Nodes:\nID\tAtom\tCCPAR\n{solver.graph_to_string()}")
             print(solver.print_formulas())

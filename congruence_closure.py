@@ -71,6 +71,7 @@ class CC_DAG:
     def union(self,id1,id2):
         n1 = self.NODE(self.find(id1))
         n2 = self.NODE(self.find(id2))
+        #implementation non arbritary choise
         if len(n1.ccpar) >len(n2.ccpar): 
             n2.find  = copy.copy(self.find(id1))
             n1.ccpar.update(n2.ccpar)
@@ -113,7 +114,7 @@ class CC_DAG:
 
     def solve(self):
         for eq in self.equalities:
-            if eq in self.inequalities or eq[::-1] in self.inequalities: return 1,eq
+            if eq in self.inequalities or eq[::-1] in self.inequalities: return 1,eq #Forbidden list
             self.merge(eq[0],eq[1])
         for ineq in self.inequalities:
             find1,find2 =  self.find(ineq[0]),self.find(ineq[1])
@@ -176,7 +177,7 @@ class CC_DAG:
             for formula in self.equalities:
                 s_eq += f"_{self.graph[formula[0]].string} = {self.graph[formula[1]].string}\n"
                 s_eq += f"__Find version:\n"
-                s_eq += f"__{self.graph[self.graph[formula[0]].find].string} = {self.graph[self.graph[formula[1]].find].string}"
+                s_eq += f"___{self.graph[self.graph[formula[0]].find].string} = {self.graph[self.graph[formula[1]].find].string}"
                 s_eq += "\n"
         if ineq:
             s_ineq = "Inequalities:\n"

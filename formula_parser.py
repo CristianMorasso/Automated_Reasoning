@@ -27,29 +27,32 @@ class parse_atoms:
         self.id = -1
 
     def rec_build(self,fn,args): 
+        """
+        recursive func to go to inner most args and come back to process them all
+        """
         real_args = []
         c_len,counter = len(args),0
-        # Cycle through args
+        # processing args
         while counter < c_len:
             try:
                 # Argument is a function with arguments
                 if args[counter] == ",":
                     counter+=1
                 elif isinstance(args[counter], str) and (not isinstance(args[counter +1], str)):
-                    #args[counter] contiene una stringa e args[counter+1] è una lista di args -> livello interno
+                    #if we got a fn and a list near we call the function passing the args (to go deeper) 
                     real_args.append(self.rec_build(args[counter],args[counter+1])) #recursive call
                     counter+=2
                 # Argument is a literal with NO arguments
                 elif isinstance(args[counter], str): # else: 
                     if "," in args[counter]:
-                        args[counter] = args[counter].split(",")[0]#[:args[counter].find(",")]
+                        args[counter] = args[counter].split(",")[0]
                     check_id =  self.atom_dict.get(args[counter],"aviable")
-                    if check_id == "aviable":  # CREATE SINGLE LITERAL ELEMENT
+                    if check_id == "aviable":  # If the node do not exit we create it 
                         self.id+=1
-                        self.atom_dict[args[counter]] = copy.copy(self.id)
-                        self.cc_dag.add_node(node_DAG(id=copy.copy(self.id),fn=args[counter],string = args[counter],args=[]))
-                        real_args.append(copy.copy(self.id))
-                    else: real_args.append(check_id)
+                        self.atom_dict[args[counter]] = copy.copy(self.id) #updating the dict
+                        self.cc_dag.add_node(node_DAG(id=copy.copy(self.id),fn=args[counter],string = args[counter],args=[]))   #updating the dag
+                        real_args.append(copy.copy(self.id))    #saving args to give to the caller
+                    else: real_args.append(check_id)    #saving args to give to the caller
                     counter+=1
                 else:
                     pass
@@ -57,25 +60,26 @@ class parse_atoms:
             except: 
                 
                 check_id =  self.atom_dict.get(args[counter],"aviable")
-                if check_id == "aviable":  # CREATE SINGLE LITERAL ELEMENT
+                if check_id == "aviable":  # If the node do not exit we create it
                     self.id+=1
-                    self.atom_dict[args[counter]] = copy.copy(self.id)
-                    real_args.append(copy.copy(self.id))
-                    self.cc_dag.add_node(node_DAG(id=copy.copy(self.id),fn=args[counter],string = args[counter],args=[]))
-                else: real_args.append(check_id)
+                    self.atom_dict[args[counter]] = copy.copy(self.id)  #updating the dict
+                    real_args.append(copy.copy(self.id))    #saving args to give to the caller
+                    self.cc_dag.add_node(node_DAG(id=copy.copy(self.id),fn=args[counter],string = args[counter],args=[]))    #updating the dag
+                else: real_args.append(check_id)    #saving args to give to the caller
                 counter+=1
             
         if fn != None:
             args_string = ""
+            # recreate the original string to check it in the dict
             for instance in real_args:
                 args_string= args_string + self.cc_dag.graph[instance].string +", "
             args_string = args_string[:-2]
             final_node = fn + "(" + args_string  + ")"
             check_id =  self.atom_dict.get(final_node,"aviable")
-            if check_id == "aviable":  # CREATE SINGLE LITERAL ELEMENT
+            if check_id == "aviable":  # If the node do not exit we create it
                 self.id+=1
-                self.atom_dict[final_node] = copy.copy(self.id)
-                self.cc_dag.add_node(node_DAG(id=copy.copy(self.id),fn=fn,string = final_node, args=real_args))
+                self.atom_dict[final_node] = copy.copy(self.id) 
+                self.cc_dag.add_node(node_DAG(id=copy.copy(self.id),fn=fn,string = final_node, args=real_args))  #updating the dag
                 return copy.copy(self.id)
             return check_id
         else: return 
@@ -83,7 +87,7 @@ class parse_atoms:
     def parse(self,atoms):
         for atom in atoms: 
             atom = "(" + atom + ")"
-            if self.atom_dict.get(atom,"aviable") == "aviable": # dissect the atom if is not already in the dict
+            if self.atom_dict.get(atom,"aviable") == "aviable": # If the node do not exit we process it 
                 dissected_atom = nestedExpr('(',')').parseString(atom).asList()
                 dissected_atom = dissected_atom[0]
                 self.rec_build(None,dissected_atom)

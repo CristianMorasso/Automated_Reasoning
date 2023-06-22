@@ -47,7 +47,7 @@ def main(file="",term=None):
         solver.equalities, solver.inequalities = gp.parse_equations(equations,atom_parser.atom_dict) 
         # Running Congruence Closure 
         result, ineq = solver.solve() 
-        print((f"Formulas:\n{equations}"))
+        print((f"Formulas: {equations}"))
         if verbose:
             #print((f"Problem: "))
             #print((f"Formulas:\n{equations}"))

@@ -6,11 +6,11 @@ import smt_parse as smtp
 def main(file="",term=None):
     # Checks
     if len(sys.argv)>1: file = sys.argv[1]
-    # if file == "": 
-    #     print("ERROR: no input file!")
-    #     exit()
-    #file = 'inputs\input_smt2\input.smt2'
-    file = '.\inputs\input2.smt2'
+    if file == "": 
+        print("ERROR: no input file!")
+        exit()
+    # #file = 'inputs\input_smt2\input.smt2'
+    # file = '.\inputs\input2.smt2'
 
     # DECLARATIONS:
     solver = cc.CC_DAG()

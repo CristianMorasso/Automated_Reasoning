@@ -160,8 +160,9 @@ class CC_DAG:
         handles.append(Line2D([0], [0],  linestyle = "dashed", label='Find Edge', color="black"))
         nx.draw(G, pos, with_labels=True, labels=labels, node_color='green', node_size=500, font_size=10, arrows=True) #lightblue
         plt.legend(handles=handles)
-        plt.show()
         plt.savefig(f"DAG_{find}.png")
+        plt.show()
+        
         return G
 
     def print_formulas(self, eq= True, ineq = True):

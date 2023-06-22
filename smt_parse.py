@@ -1,47 +1,49 @@
 from pysmt.smtlib.parser import SmtLibParser
-from pysmt.rewritings import CNFizer 
-cnf_parser = CNFizer()
-# from cnf_converter import cnf_convert 
 
 class smt_parser():
     def __init__(self):
         self.parser = SmtLibParser()
 
     def parse(self,filename):
-        # NB: Should create an smtlib env here for script values 
         script = self.parser.get_script_fname(filename)
-
         # Get all the Assert's
-        # f= script.get_last_formula() # No More only last assert
         f= script.get_strict_formula()
-
+        #get ground_truth
+        try:
+            result = [cmd for cmd in script.commands if ((cmd.name == "set-info") and (":status" in cmd.args))]
+            ground_truth = result[0].args[1].upper()
+        except:
+            ground_truth = "UNKNOWN"
         # Checks on the File
         assert script.count_command_occurrences("assert") >= 1
         assert script.contains_command("check-sat")
 
-        # Transform formulas to cnf 
-        # converted = cnf_parser.convert(f)
-        # formulas = cnf_parser.serialize(converted) 
+        formulas = f.serialize()[1:-1] 
+        
+        return formulas.split('|'),ground_truth, '|' in formulas
+    
 
-        formulas = f.serialize() #list(map(lambda x: x.serialize(),list(f.args())))
-        #create a list with all atoms (string version serialize)
-        atoms    = list(map(lambda x: x.serialize(),list(f.get_atoms())))
+    def parse_and_clause(self, and_clause):
 
-        real_atoms,real_formulas = [],[]
-        for atom in atoms:
-            if atom.find("=") != -1:    #if equality we remove the paretesis and split in the 2 atoms
-                equality = atom[1:-1].split("=")
-                real_atoms.append(equality[0].strip())
-                real_atoms.append(equality[1].strip())
-            else:
-                real_atoms.append(atom) #[1:-1])
+        atoms,formulas = [],[]
         # Separate all Ands 
-        if formulas.find("&") != -1:
-            separated_formulas = formulas[1:-1].split("&")
-            real_formulas.extend(list(map(lambda x: x.strip(),separated_formulas)))
+        if "&" in and_clause:
+            splitted_clause = and_clause.strip().split("&") #split on &
+            for atom in splitted_clause:
+                formulas.append(atom.strip()[1:-1]) #remove parentesis of &
+        else:
+            formulas.append(and_clause) #mono clause
+        for atom in formulas:
+            if "!" in atom:
+                atom = atom[3:-1]   #remove "! (" and the last parentesis
+            if "=" in atom:    #if equality we remove the paretesis and split in the 2 atoms
+                equality = atom.split("=")
+                atoms.append(equality[0].strip())
+                atoms.append(equality[1].strip())
+            else:
+                atoms.append(atom) #[1:-1])
         # Remove all non-equality formulas
-        real_formulas = [x for x in real_formulas if x.find("=")!=-1 ]#check cosa fa
+        formulas = [x for x in formulas if "=" in x]
 
-        # print(real_formulas)
-        # real_formulas = cnf_convert(real_formulas)
-        return real_formulas,list(set(real_atoms))
+        return formulas,list(set(atoms))
+

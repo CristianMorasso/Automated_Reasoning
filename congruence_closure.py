@@ -113,7 +113,7 @@ class CC_DAG:
 
     def solve(self):
         for eq in self.equalities:
-            if eq in self.inequalities or eq[::-1] in self.inequalities: return 1,ineq
+            if eq in self.inequalities or eq[::-1] in self.inequalities: return 1,eq
             self.merge(eq[0],eq[1])
         for ineq in self.inequalities:
             find1,find2 =  self.find(ineq[0]),self.find(ineq[1])

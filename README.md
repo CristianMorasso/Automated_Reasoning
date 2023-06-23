@@ -7,6 +7,11 @@ CODE AVAILABLE:<br>
 https://github.com/CristianMorasso/Automated_Reasoning<br>
 Here there is the repo with the source code of the project.
 
+INPUT DIR AVAILABLE:<br>
+https://github.com/CristianMorasso/SMT_inputs
+<br>
+Here you can find the inputs, some input was found online and some was translated by another student in the course (cited as author in the file).
+
 ### HOW IT WORKS  
 This code can process some SMT input file and say if the given problem is *satisfiable* or not using the Congruence closure algorithm.
 

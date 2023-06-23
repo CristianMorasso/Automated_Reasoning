@@ -1,7 +1,8 @@
 ## Congruence Closure with DAG's Algorithm
 TEST AVAILABLE:<br>
-https://colab.research.google.com/drive/1rJMmnOFuNXOE60Z6-e-T_yU2XaX5j-jA?usp=sharing <br>
+https://colab.research.google.com/drive/1rJMmnOFuNXOE60Z6-e-T_yU2XaX5j-jA?usp=sharing<br>
 The code is complete with a guide to test it.
+To modify the code you have to save a copy and modify it.
 
 CODE AVAILABLE:<br>
 https://github.com/CristianMorasso/Automated_Reasoning<br>
